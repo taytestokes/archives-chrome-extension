@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Archives Extension",
+  "version": "1.0.0",
+  "description": "Store online resources",
+  "permissions": ["storage", "activeTab", "tabs"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "16": "assets/logo-dark-16.png",
+    "32": "assets/logo-dark-32.png",
+    "48": "assets/logo-dark-48.png",
+    "128": "assets/logo-dark-128.png"
+  }
+}
