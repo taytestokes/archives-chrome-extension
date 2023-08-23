@@ -12,6 +12,7 @@ module.exports = {
   },
   module: {
     rules: [
+      // Javascript and JSX
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
@@ -22,7 +23,15 @@ module.exports = {
           },
         },
       },
+      // CSS
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
     ],
+  },
+  resolve: {
+    extensions: [".js", ".jsx"],
   },
   plugins: [
     new HtmlWebpackPlugin({
