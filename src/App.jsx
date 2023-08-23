@@ -22,12 +22,20 @@ export const App = () => {
 
   const titleInputRef = useRef();
 
-  const getAndSetActiveTab = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+  const getAndSetActiveTab = async () => {
+    try {
+      const tabs = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
       const { title, url } = tabs[0];
-      setActiveTabTitle(title);
-      setActiveTabUrl(url);
-    });
+
+      await setActiveTabTitle(title);
+      await setActiveTabUrl(url);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   const saveRecord = async () => {
@@ -96,6 +104,7 @@ export const App = () => {
           <span className="rounded-md bg-zinc-700 px-2.5 py-0.5 text-white">
             Title
           </span>
+
           <button
             className="border border-zinc-700 hover:bg-zinc-800 transition rounded-md p-1 ml-auto"
             onClick={() => {
