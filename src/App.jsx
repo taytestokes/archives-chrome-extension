@@ -18,9 +18,35 @@ export const App = () => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [activeTabTitle, setActiveTabTitle] = useState("");
   const [activeTabUrl, setActiveTabUrl] = useState("");
-  const [description, setDescription] = useState("");
+  const [userRecords, setUserRecords] = useState([]);
 
   const titleInputRef = useRef();
+
+  const recordHasAlreadyBeenSaved = userRecords.some(
+    (record) => record.url === activeTabUrl
+  );
+
+  const getSavedRecords = async () => {
+    try {
+      const response = await fetch("http://0.0.0.0:8080/api/v1/records/all", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      setUserRecords(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   const getAndSetActiveTab = async () => {
     try {
@@ -51,7 +77,6 @@ export const App = () => {
         body: JSON.stringify({
           url: activeTabUrl,
           title: activeTabTitle,
-          description,
         }),
       });
 
@@ -81,6 +106,12 @@ export const App = () => {
     }
   }, [isEditingTitle]);
 
+  useEffect(() => {
+    if (token) {
+      getSavedRecords();
+    }
+  }, [token]);
+
   if (!token) return <LoginForm />;
 
   return (
@@ -105,23 +136,25 @@ export const App = () => {
             Title
           </span>
 
-          <button
-            className="border border-zinc-700 hover:bg-zinc-800 transition rounded-md p-1 ml-auto"
-            onClick={() => {
-              setIsEditingTitle(!isEditingTitle);
-            }}
-            aria-label={
-              isEditingTitle
-                ? "Select to disbale title edit mode"
-                : "Select to enable title edit mode"
-            }
-          >
-            {isEditingTitle ? (
-              <XMarkIcon className="h-3 w-3 text-white" />
-            ) : (
-              <PencilIcon className="h-3 w-3 text-white" />
-            )}
-          </button>
+          {!recordHasAlreadyBeenSaved && (
+            <button
+              className="border border-zinc-700 hover:bg-zinc-800 transition rounded-md p-1 ml-auto"
+              onClick={() => {
+                setIsEditingTitle(!isEditingTitle);
+              }}
+              aria-label={
+                isEditingTitle
+                  ? "Select to disbale title edit mode"
+                  : "Select to enable title edit mode"
+              }
+            >
+              {isEditingTitle ? (
+                <XMarkIcon className="h-3 w-3 text-white" />
+              ) : (
+                <PencilIcon className="h-3 w-3 text-white" />
+              )}
+            </button>
+          )}
         </div>
         <input
           type="text"
@@ -133,30 +166,19 @@ export const App = () => {
         />
       </div>
 
-      <div className="w-full mt-4 p-2 bg-zinc-800 rounded-md">
-        <span className="rounded-md bg-zinc-700 px-2.5 py-0.5 text-white">
-          Description
-        </span>
-
-        <input
-          type="text"
-          className="w-full bg-zinc-900 mt-2 p-1 border border-zinc-700 rounded-md focus:outline-none truncate"
-          value={description}
-          placeholder="(Optional) Add a description..."
-          onChange={(evt) => setDescription(evt.target.value)}
-        />
-      </div>
-
-      <button
-        className="w-full mt-4 rounded-md bg-transparent px-8 py-2 font-medium transition hover:bg-zinc-800 border border-zinc-700"
-        onClick={saveRecord}
-      >
-        {loading ? (
-          <LoadingSpinner className="w-[18px] h-[18px] mx-auto" />
-        ) : (
-          "Archive"
-        )}
-      </button>
+      {!recordHasAlreadyBeenSaved && (
+        <button
+          className={`w-full mt-4 rounded-md bg-transparent px-8 py-2 font-medium transition hover:bg-zinc-800 border border-zinc-700`}
+          onClick={saveRecord}
+          disabled={recordHasAlreadyBeenSaved}
+        >
+          {loading ? (
+            <LoadingSpinner className="w-[18px] h-[18px] mx-auto" />
+          ) : (
+            "Archive"
+          )}
+        </button>
+      )}
     </Layout>
   );
 };
