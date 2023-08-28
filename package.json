@@ -1,7 +1,7 @@
 {
   "name": "archives-chrome-extension",
   "version": "1.0.0",
-  "description": "",
+  "description": "Archives chrome extension.",
   "main": "popup.js",
   "scripts": {
     "dev": "webpack --watch --config webpack.dev.js",
