@@ -28,7 +28,14 @@ export const App = () => {
 
   const getSavedRecords = async () => {
     try {
-      const response = await fetch("http://0.0.0.0:8080/api/v1/records/all", {
+      const { installType } = await chrome.management.getSelf();
+
+      const url =
+        installType === "development"
+          ? "http://localhost:8080"
+          : "https://archives.taytestokes.io";
+
+      const response = await fetch(`${url}/api/v1/records/all`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +75,14 @@ export const App = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://0.0.0.0:8080/api/v1/records", {
+      const { installType } = await chrome.management.getSelf();
+
+      const url =
+        installType === "development"
+          ? "http://localhost:8080"
+          : "https://archives.taytestokes.io";
+
+      const response = await fetch(`${url}/api/v1/records`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

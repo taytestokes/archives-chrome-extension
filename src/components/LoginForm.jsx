@@ -17,7 +17,14 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://0.0.0.0:8080/api/v1/users/login", {
+      const { installType } = await chrome.management.getSelf();
+
+      const url =
+        installType === "development"
+          ? "http://localhost:8080"
+          : "https://archives.taytestokes.io";
+
+      const response = await fetch(`${url}/api/v1/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
